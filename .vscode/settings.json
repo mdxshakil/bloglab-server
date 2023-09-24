@@ -8,8 +8,8 @@
     "sideBar.background": "#0F1927",
     "editor.background": "#171C2C",
     "tab.activeBackground": "#0e4949",
-    "activityBar.background": "#491F3A",
-    "titleBar.activeBackground": "#662B52",
+    "activityBar.background": "#8b3b0d",
+    "titleBar.activeBackground": "#a03c0d",
     "titleBar.activeForeground": "#FCF9FB"
   }
 }

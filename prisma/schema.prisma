@@ -7,7 +7,174 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id       String @id @default(uuid())
-  userName String
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  role          USER_ROLE
+  accountStatus ACCOUNT_STATUS @default(pending)
+  profile       Profile?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  blogs     Blog[]
+  comments  Comment[]
+  replies   Reply[]
+  reports   Report[]
+
+  @@map("users")
+}
+
+model Profile {
+  id             String         @id @default(uuid())
+  firstName      String
+  lastName       String
+  profilePicture String
+  contactNo      String
+  bloggerLevel   BLOGGER_LEVEL? @default(bronze)
+  readerLevel    READER_LEVEL?  @default(newbie)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  favouriteCategories FavouriteCategory[]
+
+  @@map("profiles")
+}
+
+model Category {
+  id                  String              @id @default(uuid())
+  title               String              @unique
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  favouriteCategories FavouriteCategory[]
+  blogs               Blog[]
+
+  @@map("categories")
+}
+
+model FavouriteCategory {
+  id        String  @id @default(uuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("favouritecategories")
+}
+
+model Blog {
+  id           String          @id @default(uuid())
+  title        String
+  banner       String
+  content      String
+  likeCount    Int?            @default(0)
+  reportCount  Int?            @default(0)
+  shareCount   Int?            @default(0)
+  commentCount Int?            @default(0)
+  timeToRead   Float?          @default(5)
+  isFeatured   Boolean         @default(false)
+  isApproved   Boolean         @default(false)
+  visibility    BLOG_VISIBILITY
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  comments  Comment[]
+  reports   Report[]
+
+  @@map("blogs")
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  comment String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  blogId String
+  blog   Blog   @relation(fields: [blogId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  replies   Reply[]
+
+  @@map("comments")
+}
+
+model Reply {
+  id    String @id @default(uuid())
+  reply String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("replies")
+}
+
+model Report {
+  id           String @id @default(uuid())
+  reportReason String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  blogId String
+  blog   Blog   @relation(fields: [blogId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reports")
+}
+
+enum USER_ROLE {
+  reader
+  blogger
+  admin
+}
+
+enum ACCOUNT_STATUS {
+  active
+  blocked
+  pending
+}
+
+enum BLOGGER_LEVEL {
+  bronze
+  silver
+  gold
+  platinum
+  signature
+}
+
+enum READER_LEVEL {
+  newbie
+  casual
+  regular
+  engaged
+  super
+}
+
+enum BLOG_VISIBILITY {
+  public
+  private
 }

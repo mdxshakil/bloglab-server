@@ -8,11 +8,14 @@ export default {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
   database_url: process.env.DATABASE_URL,
-  bycrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
+  bycrypt_salt_rounds: Number(process.env.BCRYPT_SALT_ROUNDS),
+  profile_pic_dest: process.env.PROFILE_PIC_DEST,
+  blog_banner_dest: process.env.BLOG_BANNER_DEST,
+  server_host:process.env.SERVER_HOST,
   jwt: {
     secret: process.env.JWT_SECRET,
-    refresh_secret: process.env.JWT_REFRESH_SECRET,
     expires_in: process.env.JWT_EXPIRES_IN,
+    refresh_secret: process.env.JWT_REFRESH_SECRET,
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
   },
 };

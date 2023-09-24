@@ -5,10 +5,22 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import routes from './app/routes';
 
 import cookieParser from 'cookie-parser';
+import config from './config';
 
 const app: Application = express();
 
+// Serve uploaded images statically
+app.use('/avatar', express.static(config.profile_pic_dest as string));
+app.use('/banner', express.static(config.blog_banner_dest as string));
+// localhost:5000/avater/filename
+
 app.use(cors());
+// app.use(
+//   cors({
+//     origin: 'http://examplefrontend.com',
+//     credentials: true,
+//   })
+// );
 app.use(cookieParser());
 
 //parser
@@ -16,7 +28,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', routes);
-
 
 //global error handler
 app.use(globalErrorHandler);
