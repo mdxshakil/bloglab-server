@@ -12,4 +12,8 @@ router.post(
   BlogController.createNewBlog
 );
 
+router.get('/get-pending-blogs', BlogController.getPendingBlogs);
+
+router.patch('/approve-pending-blogs', BlogController.approveBlogByAdmin);
+
 export const BlogRoutes = router;

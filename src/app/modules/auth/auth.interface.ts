@@ -22,4 +22,5 @@ export type ILoginResponse = {
   role: string;
   id: string;
   accountStatus: string;
+  profilePicture: string;
 };

@@ -81,6 +81,15 @@ const login = async (payload: ILoginUser): Promise<ILoginResponse> => {
   if (!isPasswordValid) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid credentials');
   }
+  //get user profile
+  let profile;
+  if (isUserExists && isPasswordValid) {
+    profile = await prisma.profile.findFirst({
+      where: {
+        userId: isUserExists.id,
+      },
+    });
+  }
   //generate accesstoken for the user
   const accessToken = jwtHelpers.createToken(
     {
@@ -104,6 +113,7 @@ const login = async (payload: ILoginUser): Promise<ILoginResponse> => {
     role: isUserExists.role,
     id: isUserExists.id,
     accountStatus: isUserExists.accountStatus,
+    profilePicture: profile?.profilePicture as string,
   };
 };
 
@@ -119,12 +129,22 @@ const persistLogin = async (payload: JwtPayload | null) => {
   if (!isExists) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
   }
+  //get user profile
+  let profile;
+  if (isExists) {
+    profile = await prisma.profile.findFirst({
+      where: {
+        userId: isExists.id,
+      },
+    });
+  }
 
   return {
     email: isExists.email,
     role: isExists.role,
     id: isExists.id,
     accountStatus: isExists.accountStatus,
+    profilePicture: profile?.profilePicture as string,
   };
 };
 
