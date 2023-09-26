@@ -112,6 +112,7 @@ const login = async (payload: ILoginUser): Promise<ILoginResponse> => {
     email: isUserExists.email,
     role: isUserExists.role,
     id: isUserExists.id,
+    profileId: profile?.id as string,
     accountStatus: isUserExists.accountStatus,
     profilePicture: profile?.profilePicture as string,
   };
@@ -143,6 +144,7 @@ const persistLogin = async (payload: JwtPayload | null) => {
     email: isExists.email,
     role: isExists.role,
     id: isExists.id,
+    profileId: profile?.id,
     accountStatus: isExists.accountStatus,
     profilePicture: profile?.profilePicture as string,
   };

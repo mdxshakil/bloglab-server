@@ -74,15 +74,15 @@ const approveBlogByAdmin = async (blogId: string) => {
   };
 };
 
-const getBlogsByUserPreference = async (userId: string): Promise<Blog[]> => {
+const getBlogsByUserPreference = async (profileId: string): Promise<Blog[]> => {
   const whereConditions = [];
 
   //if user is logged in then show preferred blogs, if user is not logged in show him all blogs
-  if (userId) {
+  if (profileId) {
     //find the user profile to get the preferred categories of the user
     const userProfile = await prisma.profile.findUnique({
       where: {
-        userId,
+        id: profileId,
       },
       include: {
         favouriteCategories: {

@@ -40,8 +40,41 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getUsersSelectedcategory = catchAsync(
+  async (req: Request, res: Response) => {
+    const { profileId } = req.query;
+    const result = await CategoryService.getUsersSelectedcategory(
+      profileId as string
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Favourite categories fetched successfully',
+      data: result,
+    });
+  }
+);
+
+const followUnfollowCategory = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = req.body;
+    
+    const result = await CategoryService.followUnfollowCategory(data);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'favourite Category list updated successfully',
+      data: result,
+    });
+  }
+);
+
 export const CategoryController = {
   createCategory,
   getAllCategory,
   getSingleCategory,
+  getUsersSelectedcategory,
+  followUnfollowCategory
 };
