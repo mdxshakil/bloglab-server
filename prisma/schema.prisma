@@ -17,7 +17,6 @@ model User {
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  blogs     Blog[]
   comments  Comment[]
   replies   Reply[]
   reports   Report[]
@@ -40,6 +39,7 @@ model Profile {
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   favouriteCategories FavouriteCategory[]
+  blogs               Blog[]
 
   @@map("profiles")
 }
@@ -81,10 +81,10 @@ model Blog {
   timeToRead   Float?          @default(5)
   isFeatured   Boolean         @default(false)
   isApproved   Boolean         @default(false)
-  visibility    BLOG_VISIBILITY
+  visibility   BLOG_VISIBILITY
 
   authorId String
-  author   User   @relation(fields: [authorId], references: [id])
+  author   Profile @relation(fields: [authorId], references: [id])
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])

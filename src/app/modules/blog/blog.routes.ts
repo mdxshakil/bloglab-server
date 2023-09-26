@@ -13,6 +13,7 @@ router.post(
 );
 
 router.get('/get-pending-blogs', BlogController.getPendingBlogs);
+router.get('/get-preferred-blogs', BlogController.getBlogsByUserPreference);
 
 router.patch('/approve-pending-blogs', BlogController.approveBlogByAdmin);
 

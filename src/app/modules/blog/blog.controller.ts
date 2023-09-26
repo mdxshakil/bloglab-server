@@ -49,8 +49,22 @@ const approveBlogByAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getBlogsByUserPreference = catchAsync(
+  async (req: Request, res: Response) => {
+    const { userId } = req.query;
+    const result = await BlogService.getBlogsByUserPreference(userId as string);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Blogs retrived',
+      data: result,
+    });
+  }
+);
+
 export const BlogController = {
   createNewBlog,
   getPendingBlogs,
   approveBlogByAdmin,
+  getBlogsByUserPreference,
 };
