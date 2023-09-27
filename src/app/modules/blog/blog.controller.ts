@@ -62,9 +62,45 @@ const getBlogsByUserPreference = catchAsync(
   }
 );
 
+const getBlogById = catchAsync(async (req: Request, res: Response) => {
+  const { blogId } = req.params;
+  const result = await BlogService.getBlogById(blogId as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog retrived',
+    data: result,
+  });
+});
+
+const getBlogsByAuthorId = catchAsync(async (req: Request, res: Response) => {
+  const { authorId } = req.params;
+
+  const result = await BlogService.getBlogsByAuthorId(authorId as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blogs retrived',
+    data: result,
+  });
+});
+
+const getLatestBlogs = catchAsync(async (req: Request, res: Response) => {
+  const result = await BlogService.getLatestBlogs();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Latest Blogs retrived',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createNewBlog,
   getPendingBlogs,
   approveBlogByAdmin,
   getBlogsByUserPreference,
+  getBlogById,
+  getBlogsByAuthorId,
+  getLatestBlogs,
 };

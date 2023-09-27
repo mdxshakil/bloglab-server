@@ -14,7 +14,11 @@ router.post(
 
 router.get('/get-pending-blogs', BlogController.getPendingBlogs);
 router.get('/get-preferred-blogs', BlogController.getBlogsByUserPreference);
+router.get('/latest-blogs', BlogController.getLatestBlogs);
 
 router.patch('/approve-pending-blogs', BlogController.approveBlogByAdmin);
+
+router.get('/:blogId', BlogController.getBlogById);
+router.get('/author/:authorId', BlogController.getBlogsByAuthorId);
 
 export const BlogRoutes = router;

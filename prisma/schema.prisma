@@ -41,7 +41,20 @@ model Profile {
   favouriteCategories FavouriteCategory[]
   blogs               Blog[]
 
+  followers Follower[]
+
   @@map("profiles")
+}
+
+model Follower {
+  id String @id @default(uuid())
+
+  followerId String //who is following
+  follower   Profile @relation(fields: [followerId], references: [id])
+
+  authorId String //whom is being followed
+
+  @@map("followers")
 }
 
 model Category {

@@ -131,9 +131,57 @@ const getBlogsByUserPreference = async (profileId: string): Promise<Blog[]> => {
   return preferredBlogs;
 };
 
+const getBlogById = async (blogId: string): Promise<Blog | null> => {
+  const result = await prisma.blog.findUnique({
+    where: {
+      id: blogId,
+    },
+    include: {
+      author: true,
+      category: true,
+    },
+  });
+
+  return result;
+};
+
+const getBlogsByAuthorId = async (authorId: string): Promise<Blog[]> => {
+  const result = await prisma.blog.findMany({
+    where: {
+      authorId,
+    },
+    include: {
+      author: true,
+      category: true,
+    },
+  });
+
+  return result;
+};
+
+const getLatestBlogs = async (): Promise<Blog[]> => {
+  const result = await prisma.blog.findMany({
+    include: {
+      author: true,
+      category: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 5,
+  });
+  console.log(result);
+  
+
+  return result;
+};
+
 export const BlogService = {
   createNewBlog,
   getPendingBlogs,
   approveBlogByAdmin,
   getBlogsByUserPreference,
+  getBlogById,
+  getBlogsByAuthorId,
+  getLatestBlogs,
 };
