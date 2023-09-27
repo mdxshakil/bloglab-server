@@ -1,6 +1,11 @@
-import { BLOG_VISIBILITY, Blog } from '@prisma/client';
+import { ACCOUNT_STATUS, BLOG_VISIBILITY, Blog } from '@prisma/client';
+import httpStatus from 'http-status';
+import ApiError from '../../../errors/ApiError';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IGenericResponse } from '../../../interfaces/common';
+import {
+  IGenericResponse,
+  ITransactionClient,
+} from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 
@@ -126,6 +131,7 @@ const getBlogsByUserPreference = async (profileId: string): Promise<Blog[]> => {
     include: {
       category: true,
       author: true,
+      likes: true,
     },
   });
   return preferredBlogs;
@@ -135,6 +141,8 @@ const getBlogById = async (blogId: string): Promise<Blog | null> => {
   const result = await prisma.blog.findUnique({
     where: {
       id: blogId,
+      isApproved: true,
+      visibility: BLOG_VISIBILITY.public,
     },
     include: {
       author: true,
@@ -149,6 +157,8 @@ const getBlogsByAuthorId = async (authorId: string): Promise<Blog[]> => {
   const result = await prisma.blog.findMany({
     where: {
       authorId,
+      isApproved: true,
+      visibility: BLOG_VISIBILITY.public,
     },
     include: {
       author: true,
@@ -161,6 +171,10 @@ const getBlogsByAuthorId = async (authorId: string): Promise<Blog[]> => {
 
 const getLatestBlogs = async (): Promise<Blog[]> => {
   const result = await prisma.blog.findMany({
+    where: {
+      isApproved: true,
+      visibility: BLOG_VISIBILITY.public,
+    },
     include: {
       author: true,
       category: true,
@@ -170,10 +184,58 @@ const getLatestBlogs = async (): Promise<Blog[]> => {
     },
     take: 5,
   });
-  console.log(result);
-  
 
   return result;
+};
+
+const likeBlog = async (
+  blogId: string,
+  likerId: string
+): Promise<{ message: string }> => {
+  let message = '';
+
+  await prisma.$transaction(async (tc: ITransactionClient): Promise<void> => {
+    const liker = await tc.profile.findUnique({
+      where: {
+        id: likerId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (liker?.user?.accountStatus !== ACCOUNT_STATUS.active) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Can't perform this action while account is not active"
+      );
+    }
+
+    const isAlreadyLiked = await tc.like.findFirst({
+      where: {
+        likerId,
+        blogId,
+      },
+    });
+
+    if (isAlreadyLiked) {
+      await tc.like.delete({
+        where: {
+          id: isAlreadyLiked.id,
+        },
+      });
+      message = 'Like removed';
+    } else {
+      await tc.like.create({
+        data: {
+          likerId,
+          blogId,
+        },
+      });
+      message = 'Like added';
+    }
+  });
+  return { message };
 };
 
 export const BlogService = {
@@ -184,4 +246,5 @@ export const BlogService = {
   getBlogById,
   getBlogsByAuthorId,
   getLatestBlogs,
+  likeBlog,
 };

@@ -95,6 +95,17 @@ const getLatestBlogs = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const likeBlog = catchAsync(async (req: Request, res: Response) => {
+  const { blogId, likerId } = req.body;
+  const result = await BlogService.likeBlog(blogId, likerId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Like action succed',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createNewBlog,
   getPendingBlogs,
@@ -103,4 +114,5 @@ export const BlogController = {
   getBlogById,
   getBlogsByAuthorId,
   getLatestBlogs,
+  likeBlog,
 };

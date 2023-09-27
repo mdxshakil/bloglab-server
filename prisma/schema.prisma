@@ -42,6 +42,7 @@ model Profile {
   blogs               Blog[]
 
   followers Follower[]
+  likes     Like[]
 
   @@map("profiles")
 }
@@ -106,8 +107,18 @@ model Blog {
   updatedAt DateTime  @updatedAt
   comments  Comment[]
   reports   Report[]
+  likes     Like[]
 
   @@map("blogs")
+}
+
+model Like {
+  id     String @id @default(uuid())
+  blogId String
+  blog   Blog   @relation(fields: [blogId], references: [id])
+
+  likerId String
+  liker   Profile @relation(fields: [likerId], references: [id])
 }
 
 model Comment {
