@@ -26,17 +26,24 @@ const createNewBlog = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getPendingBlogs = catchAsync(async (req: Request, res: Response) => {
-  const paginationOptions = pick(req.query, paginationFields);
+const getBlogsForAdminDashboard = catchAsync(
+  async (req: Request, res: Response) => {
+    const paginationOptions = pick(req.query, paginationFields);
+    const filterOptions = pick(req.query, ['isApproved', 'isFeatured']);
+console.log(req.query);
 
-  const result = await BlogService.getPendingBlogs(paginationOptions);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Pending blogs retrived successfully',
-    data: result,
-  });
-});
+    const result = await BlogService.getBlogsForAdminDashboard(
+      paginationOptions,
+      filterOptions
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Pending blogs retrived successfully',
+      data: result,
+    });
+  }
+);
 
 const approveBlogByAdmin = catchAsync(async (req: Request, res: Response) => {
   const { blogId } = req.body;
@@ -106,13 +113,24 @@ const likeBlog = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getFeaturedBlogs = catchAsync(async (req: Request, res: Response) => {
+  const result = await BlogService.getFeaturedBlogs();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Featured Blogs retrived',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createNewBlog,
-  getPendingBlogs,
+  getBlogsForAdminDashboard,
   approveBlogByAdmin,
   getBlogsByUserPreference,
   getBlogById,
   getBlogsByAuthorId,
   getLatestBlogs,
   likeBlog,
+  getFeaturedBlogs,
 };

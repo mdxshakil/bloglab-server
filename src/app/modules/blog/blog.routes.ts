@@ -14,9 +14,10 @@ router.post(
 
 router.post('/like-blog', BlogController.likeBlog);
 
-router.get('/get-pending-blogs', BlogController.getPendingBlogs);
+router.get('/get-pending-blogs', BlogController.getBlogsForAdminDashboard);
 router.get('/get-preferred-blogs', BlogController.getBlogsByUserPreference);
 router.get('/latest-blogs', BlogController.getLatestBlogs);
+router.get('/featured-blogs', BlogController.getFeaturedBlogs);
 
 router.patch('/approve-pending-blogs', BlogController.approveBlogByAdmin);
 
