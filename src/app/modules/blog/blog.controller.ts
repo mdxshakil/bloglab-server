@@ -30,7 +30,7 @@ const getBlogsForAdminDashboard = catchAsync(
   async (req: Request, res: Response) => {
     const paginationOptions = pick(req.query, paginationFields);
     const filterOptions = pick(req.query, ['isApproved', 'isFeatured']);
-console.log(req.query);
+    console.log(req.query);
 
     const result = await BlogService.getBlogsForAdminDashboard(
       paginationOptions,
@@ -59,7 +59,12 @@ const approveBlogByAdmin = catchAsync(async (req: Request, res: Response) => {
 const getBlogsByUserPreference = catchAsync(
   async (req: Request, res: Response) => {
     const { userId } = req.query;
-    const result = await BlogService.getBlogsByUserPreference(userId as string);
+    
+    const paginationOptions = pick(req.query, paginationFields);
+    const result = await BlogService.getBlogsByUserPreference(
+      userId as string,
+      paginationOptions
+    );
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,

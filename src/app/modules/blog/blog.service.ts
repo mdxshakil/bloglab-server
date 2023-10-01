@@ -21,6 +21,31 @@ const createNewBlog = async (payload: Blog): Promise<Blog> => {
   });
   const authorProfileId = author?.profile?.id;
 
+  // Get the current date and set it to the beginning and end of the day.
+  const currentDate = new Date();
+  const startDate = new Date(currentDate);
+  startDate.setHours(0, 0, 0, 0); // Start of the day (midnight).
+  const endDate = new Date(currentDate);
+  endDate.setHours(23, 59, 59, 999); // End of the day (11:59:59.999 PM).
+
+  // Check if there are already 2 blogs posted by the user today.
+  const blogsPostedToday = await prisma.blog.findMany({
+    where: {
+      authorId: authorProfileId,
+      createdAt: {
+        gte: startDate, // Greater than or equal to the start of the day.
+        lte: endDate, // Less than or equal to the end of the day.
+      },
+    },
+  });
+
+  if (blogsPostedToday?.length >= 2) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'You have already posted 2 blogs today'
+    );
+  }
+
   const result = await prisma.blog.create({
     data: { ...payload, authorId: authorProfileId as string },
   });
@@ -100,8 +125,12 @@ const approveBlogByAdmin = async (blogId: string) => {
   };
 };
 
-const getBlogsByUserPreference = async (profileId: string): Promise<Blog[]> => {
+const getBlogsByUserPreference = async (
+  profileId: string,
+  paginationOptions: IPaginationOptions
+): Promise<IGenericResponse<Blog[]>> => {
   const whereConditions = [];
+  const page = Number(paginationOptions.page);
 
   //if user is logged in then show preferred blogs, if user is not logged in show him all blogs
   if (profileId) {
@@ -154,8 +183,32 @@ const getBlogsByUserPreference = async (profileId: string): Promise<Blog[]> => {
       author: true,
       likes: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    skip: (page - 1) * 3,
+    take: 5,
   });
-  return preferredBlogs;
+
+  const total = await prisma.blog.count({
+    where:
+      whereConditions.length > 0
+        ? { OR: whereConditions }
+        : {
+            isApproved: true,
+            visibility: BLOG_VISIBILITY.public,
+          },
+  });
+
+  return {
+    meta: {
+      page,
+      limit: 3,
+      total,
+      pageCount: Math.ceil(total / 3),
+    },
+    data: preferredBlogs,
+  };
 };
 
 const getBlogById = async (blogId: string): Promise<Blog | null> => {
