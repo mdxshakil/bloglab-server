@@ -43,4 +43,22 @@ const addReply = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const CommentController = { addComment, getAllComments, addReply };
+const getAllReplies = catchAsync(async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+
+  const result = await CommentService.getAllReplies(commentId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Replies retrived',
+    data: result,
+  });
+});
+
+export const CommentController = {
+  addComment,
+  getAllComments,
+  addReply,
+  getAllReplies,
+};

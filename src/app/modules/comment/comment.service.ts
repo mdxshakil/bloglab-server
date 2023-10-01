@@ -47,8 +47,21 @@ const addReply = async (payload: {
   return result;
 };
 
+const getAllReplies = async (commentId: string): Promise<Reply[]> => {
+  const result = await prisma.reply.findMany({
+    where: {
+      commentId,
+    },
+    include: {
+      profile: true,
+    },
+  });
+  return result;
+};
+
 export const CommentService = {
   addComment,
   getAllComments,
   addReply,
+  getAllReplies,
 };
