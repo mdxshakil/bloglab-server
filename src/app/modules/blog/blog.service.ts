@@ -1,6 +1,7 @@
 import { ACCOUNT_STATUS, BLOG_VISIBILITY, Blog } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
+import { sendMail } from '../../../helpers/mailHelper';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import {
   IGenericResponse,
@@ -111,18 +112,39 @@ const getBlogsForAdminDashboard = async (
 };
 
 const approveBlogByAdmin = async (blogId: string) => {
-  await prisma.blog.update({
+  const result = await prisma.blog.update({
     where: {
       id: blogId,
     },
     data: {
       isApproved: true,
     },
+    include: {
+      author: {
+        include: {
+          user: true,
+        },
+      },
+    },
   });
 
-  return {
-    message: 'Blog approved',
-  };
+  try {
+    await sendMail(
+      result.author.user.email,
+      'Blog approval',
+      `Your blog ${result.title} has been ${
+        result.isApproved ? 'approved.' : 'rejected.'
+      }`
+    );
+    return {
+      message: 'Blog approved',
+    };
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Internal server error'
+    );
+  }
 };
 
 const getBlogsByUserPreference = async (
@@ -186,7 +208,7 @@ const getBlogsByUserPreference = async (
     orderBy: {
       createdAt: 'desc',
     },
-    skip: (page - 1) * 3,
+    skip: (page - 1) * 5,
     take: 5,
   });
 
