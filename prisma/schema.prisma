@@ -30,6 +30,7 @@ model Profile {
   contactNo      String
   bloggerLevel   BLOGGER_LEVEL? @default(bronze)
   readerLevel    READER_LEVEL?  @default(newbie)
+  totalBlogRead  Int            @default(0)
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
@@ -131,7 +132,7 @@ model Comment {
   profile   Profile @relation(fields: [profileId], references: [id])
 
   blogId String
-  blog   Blog   @relation(fields: [blogId], references: [id])
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,7 +149,7 @@ model Reply {
   profile   Profile @relation(fields: [profileId], references: [id])
 
   commentId String
-  comment   Comment @relation(fields: [commentId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

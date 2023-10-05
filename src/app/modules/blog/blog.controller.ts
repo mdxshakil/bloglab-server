@@ -30,7 +30,6 @@ const getBlogsForAdminDashboard = catchAsync(
   async (req: Request, res: Response) => {
     const paginationOptions = pick(req.query, paginationFields);
     const filterOptions = pick(req.query, ['isApproved', 'isFeatured']);
-    console.log(req.query);
 
     const result = await BlogService.getBlogsForAdminDashboard(
       paginationOptions,
@@ -59,7 +58,7 @@ const approveBlogByAdmin = catchAsync(async (req: Request, res: Response) => {
 const getBlogsByUserPreference = catchAsync(
   async (req: Request, res: Response) => {
     const { userId } = req.query;
-    
+
     const paginationOptions = pick(req.query, paginationFields);
     const result = await BlogService.getBlogsByUserPreference(
       userId as string,
@@ -128,6 +127,18 @@ const getFeaturedBlogs = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteBlogById = catchAsync(async (req: Request, res: Response) => {
+  const { blogId } = req.params;
+
+  const result = await BlogService.deleteBlogById(blogId as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog deleted',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createNewBlog,
   getBlogsForAdminDashboard,
@@ -138,4 +149,5 @@ export const BlogController = {
   getLatestBlogs,
   likeBlog,
   getFeaturedBlogs,
+  deleteBlogById,
 };

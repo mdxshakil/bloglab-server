@@ -24,4 +24,6 @@ router.patch('/approve-pending-blogs', BlogController.approveBlogByAdmin);
 router.get('/:blogId', BlogController.getBlogById);
 router.get('/author/:authorId', BlogController.getBlogsByAuthorId);
 
+router.delete('/:blogId', BlogController.deleteBlogById);
+
 export const BlogRoutes = router;

@@ -47,6 +47,11 @@ const createNewBlog = async (payload: Blog): Promise<Blog> => {
     );
   }
 
+  const contentLength = payload.content.length;
+  const readingSpeed = 200; //200 word per minute
+  const estimatedreadingTime = Math.ceil(contentLength / readingSpeed); //in minutes
+  payload.timeToRead = estimatedreadingTime;
+
   const result = await prisma.blog.create({
     data: { ...payload, authorId: authorProfileId as string },
   });
@@ -383,6 +388,18 @@ const getFeaturedBlogs = async (): Promise<Blog[]> => {
   return result;
 };
 
+const deleteBlogById = async (blogId: string): Promise<Blog | null> => {
+  
+  
+  const result = await prisma.blog.delete({
+    where: {
+      id: blogId,
+    },
+  });
+
+  return result;
+};
+
 export const BlogService = {
   createNewBlog,
   getBlogsForAdminDashboard,
@@ -393,4 +410,5 @@ export const BlogService = {
   getLatestBlogs,
   likeBlog,
   getFeaturedBlogs,
+  deleteBlogById,
 };

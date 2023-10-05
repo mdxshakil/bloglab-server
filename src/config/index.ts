@@ -23,5 +23,6 @@ export default {
     client_secret: process.env.CLIENT_SECRET,
     redirect_uri: process.env.REDIRECT_URI,
     refresh_token: process.env.REFRESH_TOKEN,
+    mail_sender: process.env.MAIL_SENDER,
   },
 };

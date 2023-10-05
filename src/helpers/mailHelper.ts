@@ -7,6 +7,7 @@ const CLIENT_ID = config.mail.client_id;
 const CLEINT_SECRET = config.mail.client_secret;
 const REDIRECT_URI = config.mail.redirect_uri;
 const REFRESH_TOKEN = config.mail.refresh_token;
+const MAIL_SENDER = config.mail.mail_sender;
 
 const oAuth2Client = new google.auth.OAuth2(
   CLIENT_ID,
@@ -38,7 +39,7 @@ export async function sendMail(
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: 'shakil1767@gmail.com',
+        user: MAIL_SENDER,
         clientId: CLIENT_ID,
         clientSecret: CLEINT_SECRET,
         refreshToken: REFRESH_TOKEN,
@@ -47,7 +48,7 @@ export async function sendMail(
     });
 
     const mailOptions = {
-      from: 'BlogLab <shakil1767@gmail.com>',
+      from: `BlogLab < ${MAIL_SENDER}>`,
       to: receiverEmail,
       subject: subject,
       text: mailContent,
