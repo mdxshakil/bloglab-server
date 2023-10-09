@@ -16,6 +16,19 @@ const updateBlogReadCount = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getProfileInfo = catchAsync(async (req: Request, res: Response) => {
+  const { profileId } = req.params;
+  const result = await ProfileService.getProfileInfo(profileId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Profile info retrived',
+    data: result,
+  });
+});
+
 export const ProfileController = {
   updateBlogReadCount,
+  getProfileInfo,
 };

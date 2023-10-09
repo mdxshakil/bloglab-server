@@ -27,4 +27,10 @@ router.get(
   AuthController.persistLogin
 );
 
+router.patch(
+  '/approve-unapprove-user/:userId',
+  auth(ENUM_USER_ROLE.ADMIN),
+  AuthController.approveUnApproveUser
+);
+
 export const AuthRoutes = router;

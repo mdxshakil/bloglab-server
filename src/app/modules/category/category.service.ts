@@ -13,6 +13,20 @@ const createCategory = async (payload: Category): Promise<Category> => {
   return result;
 };
 
+const editCategory = async (
+  payload: Category,
+  categoryId: string
+): Promise<Category> => {
+  const result = await prisma.category.update({
+    where: {
+      id: categoryId,
+    },
+    data: payload,
+  });
+
+  return result;
+};
+
 const getAllCategory = async (): Promise<Category[]> => {
   const result = await prisma.category.findMany({});
 
@@ -102,6 +116,7 @@ const followUnfollowCategory = async (
 
 export const CategoryService = {
   createCategory,
+  editCategory,
   getAllCategory,
   getSingleCategory,
   getUsersSelectedcategory,

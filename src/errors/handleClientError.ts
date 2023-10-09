@@ -25,8 +25,8 @@ const handleClientError = (error: Prisma.PrismaClientKnownRequestError) => {
       ];
     }
   } else if (error.code === 'P2002') {
-    if (error.message.includes('`prisma.user.create()` invocation:')) {
-      message = 'Email already exists';
+    if (error.message.includes('`prisma.category.create()` invocation:')) {
+      message = 'Category already exists';
       errors = [
         {
           path: '',

@@ -25,4 +25,6 @@ export default {
     refresh_token: process.env.REFRESH_TOKEN,
     mail_sender: process.env.MAIL_SENDER,
   },
+  admin_secret_key: process.env.ADMIN_SECRET_KEY,
+  main_admin_email: process.env.MAIN_ADMIN_EMAIL,
 };

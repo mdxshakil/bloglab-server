@@ -5,6 +5,7 @@ import { BookMarkRoutes } from '../modules/bookMark/bookMark.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
 import { CommentRoutes } from '../modules/comment/comment.routes';
 import { ProfileRoutes } from '../modules/profile/profile.routes';
+import { StatisticsRoutes } from '../modules/statistics/statistics.routes';
 
 const router = express.Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: '/profile',
     route: ProfileRoutes,
+  },
+  {
+    path: '/statistics',
+    route: StatisticsRoutes,
   },
 ];
 

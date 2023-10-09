@@ -45,8 +45,8 @@ const getBlogsForAdminDashboard = catchAsync(
 );
 
 const approveBlogByAdmin = catchAsync(async (req: Request, res: Response) => {
-  const { blogId } = req.body;
-  const result = await BlogService.approveBlogByAdmin(blogId);
+  const { blogId, action } = req.body;
+  const result = await BlogService.approveBlogByAdmin(blogId, action);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -139,6 +139,19 @@ const deleteBlogById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const makeFeatured = catchAsync(async (req: Request, res: Response) => {
+  const { blogId } = req.params;
+  const { action } = req.body;
+
+  const result = await BlogService.makeFeautred(blogId as string, action);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Featured list updated',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createNewBlog,
   getBlogsForAdminDashboard,
@@ -150,4 +163,5 @@ export const BlogController = {
   likeBlog,
   getFeaturedBlogs,
   deleteBlogById,
+  makeFeatured,
 };

@@ -34,6 +34,7 @@ const signUp = async (payload: ISingupUser): Promise<{ message: string }> => {
         email,
         password: hashedPassword,
         role,
+        roleHistory: role,
         accountStatus:
           role === USER_ROLE.blogger
             ? ACCOUNT_STATUS.pending
@@ -51,13 +52,15 @@ const signUp = async (payload: ISingupUser): Promise<{ message: string }> => {
       },
     });
     // Create favourite categories using for...of loop
-    for (const category of favouriteCategories) {
-      await tc.favouriteCategory.create({
-        data: {
-          categoryId: category,
-          profileId: profileCreateResult?.id,
-        },
-      });
+    if (role !== USER_ROLE.admin) {
+      for (const category of favouriteCategories) {
+        await tc.favouriteCategory.create({
+          data: {
+            categoryId: category,
+            profileId: profileCreateResult?.id,
+          },
+        });
+      }
     }
   });
 
@@ -150,8 +153,42 @@ const persistLogin = async (payload: JwtPayload | null) => {
   };
 };
 
+const approveUnApproveUser = async (userId: string) => {
+  const result = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid user id');
+  }
+  if (result.accountStatus === ACCOUNT_STATUS.active) {
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        accountStatus: ACCOUNT_STATUS.pending,
+      },
+    });
+  } else if (result.accountStatus === ACCOUNT_STATUS.pending) {
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        accountStatus: ACCOUNT_STATUS.active,
+      },
+    });
+  }
+  return {
+    message: 'Account status updated',
+  };
+};
+
 export const AuthService = {
   signUp,
   login,
   persistLogin,
+  approveUnApproveUser,
 };

@@ -7,4 +7,6 @@ router.patch(
   ProfileController.updateBlogReadCount
 );
 
+router.get('/:profileId', ProfileController.getProfileInfo);
+
 export const ProfileRoutes = router;

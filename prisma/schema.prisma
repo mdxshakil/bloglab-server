@@ -12,6 +12,7 @@ model User {
   email         String         @unique
   password      String
   role          USER_ROLE
+  roleHistory   USER_ROLE      
   accountStatus ACCOUNT_STATUS @default(pending)
   profile       Profile?
 

@@ -1,4 +1,4 @@
-import { READER_LEVEL } from '@prisma/client';
+import { Profile, READER_LEVEL } from '@prisma/client';
 import prisma from '../../../shared/prisma';
 
 const updateBlogReadCount = async (profileId: string) => {
@@ -39,6 +39,17 @@ const updateBlogReadCount = async (profileId: string) => {
   return result;
 };
 
+const getProfileInfo = async (profileId: string): Promise<Profile | null> => {
+  const result = await prisma.profile.findUnique({
+    where: {
+      id: profileId,
+    },
+  });
+
+  return result;
+};
+
 export const ProfileService = {
   updateBlogReadCount,
+  getProfileInfo,
 };

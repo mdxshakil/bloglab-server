@@ -17,6 +17,20 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const editCategory = catchAsync(async (req: Request, res: Response) => {
+  const data = req.body;
+  const { categoryId } = req.params;
+
+  const result = await CategoryService.editCategory(data, categoryId as string);
+
+  sendResponse<Category>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Category edited successfully',
+    data: result,
+  });
+});
+
 const getAllCategory = catchAsync(async (req: Request, res: Response) => {
   const result = await CategoryService.getAllCategory();
 
@@ -59,7 +73,7 @@ const getUsersSelectedcategory = catchAsync(
 const followUnfollowCategory = catchAsync(
   async (req: Request, res: Response) => {
     const data = req.body;
-    
+
     const result = await CategoryService.followUnfollowCategory(data);
 
     sendResponse(res, {
@@ -73,8 +87,9 @@ const followUnfollowCategory = catchAsync(
 
 export const CategoryController = {
   createCategory,
+  editCategory,
   getAllCategory,
   getSingleCategory,
   getUsersSelectedcategory,
-  followUnfollowCategory
+  followUnfollowCategory,
 };

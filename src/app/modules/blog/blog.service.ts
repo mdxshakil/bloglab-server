@@ -100,9 +100,7 @@ const getBlogsForAdminDashboard = async (
   });
 
   const total = await prisma.blog.count({
-    where: {
-      isApproved: false,
-    },
+    where: whereConditions,
   });
 
   return {
@@ -110,45 +108,79 @@ const getBlogsForAdminDashboard = async (
       total,
       page,
       limit,
-      pageCount: Math.ceil(total / limit),
+      pageCount: Math.ceil(total / limit) || 1,
     },
     data: result,
   };
 };
 
-const approveBlogByAdmin = async (blogId: string) => {
-  const result = await prisma.blog.update({
-    where: {
-      id: blogId,
-    },
-    data: {
-      isApproved: true,
-    },
-    include: {
-      author: {
-        include: {
-          user: true,
+const approveBlogByAdmin = async (blogId: string, action: string) => {
+  if (action === 'approve') {
+    const result = await prisma.blog.update({
+      where: {
+        id: blogId,
+      },
+      data: {
+        isApproved: true,
+      },
+      include: {
+        author: {
+          include: {
+            user: true,
+          },
         },
       },
-    },
-  });
-
-  try {
-    await sendMail(
-      result.author.user.email,
-      'Blog approval',
-      `Your blog ${result.title} has been ${
-        result.isApproved ? 'approved.' : 'rejected.'
-      }`
-    );
-    return {
-      message: 'Blog approved',
-    };
-  } catch (error) {
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Internal server error'
-    );
+    });
+    try {
+      await sendMail(
+        result.author.user.email,
+        'Blog approval',
+        `Your blog ${result.title} has been ${
+          result.isApproved ? 'approved.' : 'rejected.'
+        }`
+      );
+      return {
+        message: 'Blog approved',
+      };
+    } catch (error) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Internal server error'
+      );
+    }
+  } else if (action === 'un approve') {
+    const result = await prisma.blog.update({
+      where: {
+        id: blogId,
+      },
+      data: {
+        isApproved: false,
+      },
+      include: {
+        author: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    try {
+      await sendMail(
+        result.author.user.email,
+        'Blog approval',
+        `Your blog ${result.title} has been ${
+          result.isApproved ? 'approved.' : 'un approved.'
+        }`
+      );
+      return {
+        message: 'Blog un approved',
+      };
+    } catch (error) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Internal server error'
+      );
+    }
   }
 };
 
@@ -389,8 +421,6 @@ const getFeaturedBlogs = async (): Promise<Blog[]> => {
 };
 
 const deleteBlogById = async (blogId: string): Promise<Blog | null> => {
-  
-  
   const result = await prisma.blog.delete({
     where: {
       id: blogId,
@@ -398,6 +428,49 @@ const deleteBlogById = async (blogId: string): Promise<Blog | null> => {
   });
 
   return result;
+};
+
+const makeFeautred = async (
+  blogId: string,
+  action: string
+): Promise<Blog | null | undefined> => {
+  const numberOfFeaturedBlogs = await prisma.blog.count({
+    where: {
+      isFeatured: true,
+    },
+  });
+
+  if (action === 'make featured') {
+    if (numberOfFeaturedBlogs >= 5) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Maximum 5 blogs can be in featured list'
+      );
+    }
+    return await prisma.blog.update({
+      where: {
+        id: blogId,
+      },
+      data: {
+        isFeatured: true,
+      },
+    });
+  } else if (action === 'remove featured') {
+    if (numberOfFeaturedBlogs <= 2) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Atleast 2 blogs must be in featured list'
+      );
+    }
+    return await prisma.blog.update({
+      where: {
+        id: blogId,
+      },
+      data: {
+        isFeatured: false,
+      },
+    });
+  }
 };
 
 export const BlogService = {
@@ -411,4 +484,5 @@ export const BlogService = {
   likeBlog,
   getFeaturedBlogs,
   deleteBlogById,
+  makeFeautred,
 };

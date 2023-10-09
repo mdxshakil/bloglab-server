@@ -43,8 +43,21 @@ const persistLogin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const approveUnApproveUser = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const result = await AuthService.approveUnApproveUser(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Account status updated',
+    data: result,
+  });
+});
+
 export const AuthController = {
   signUp,
   login,
   persistLogin,
+  approveUnApproveUser,
 };
