@@ -27,4 +27,9 @@ export default {
   },
   admin_secret_key: process.env.ADMIN_SECRET_KEY,
   main_admin_email: process.env.MAIN_ADMIN_EMAIL,
+  cloudinary: {
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  },
 };

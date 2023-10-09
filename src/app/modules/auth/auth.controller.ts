@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import config from '../../../config';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
+import { uploadImage } from '../../../utils/fileUploadHelper';
 import { AuthService } from './auth.service';
 
 const signUp = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-  const profilePicture = config.server_host + '/avatar/' + req.file?.filename;
+  const profilePicture = await uploadImage(req.file?.path as string);
+  console.log(profilePicture);
 
   const result = await AuthService.signUp({ ...data, profilePicture });
 
