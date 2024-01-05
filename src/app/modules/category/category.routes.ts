@@ -9,6 +9,8 @@ router.get(
   CategoryController.getUsersSelectedcategory
 );
 
+router.get('/categorized-blogs/:categoryTitle', CategoryController.getCategorizedBlogs);
+
 router.patch(
   '/edit-category/:categoryId',
   auth(ENUM_USER_ROLE.ADMIN),

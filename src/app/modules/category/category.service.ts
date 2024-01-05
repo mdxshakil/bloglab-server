@@ -1,7 +1,12 @@
-import { Category, FavouriteCategory } from '@prisma/client';
+import { Blog, Category, FavouriteCategory } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
-import { ITransactionClient } from '../../../interfaces/common';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
+import {
+  IGenericResponse,
+  ITransactionClient,
+} from '../../../interfaces/common';
+import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 import { ICategoryFollowUnfollowPayload } from './category.interface';
 
@@ -114,6 +119,53 @@ const followUnfollowCategory = async (
   return { message: 'Favourite category list updated successfully!' };
 };
 
+const getCategorizedBlogs = async (
+  categoryTitle: string,
+  paginationOptions: IPaginationOptions
+): Promise<IGenericResponse<Blog[]>> => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions);
+
+  const result = await prisma.blog.findMany({
+    where: {
+      category: {
+        title: {
+          equals: categoryTitle,
+        },
+      },
+    },
+    include: {
+      author: true,
+      category: true,
+    },
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    take: limit,
+    skip,
+  });
+
+  const total = await prisma.blog.count({
+    where: {
+      category: {
+        title: {
+          equals: categoryTitle,
+        },
+      },
+    },
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pageCount: Math.ceil(total / limit) || 1,
+    },
+    data: result,
+  };
+};
+
 export const CategoryService = {
   createCategory,
   editCategory,
@@ -121,4 +173,5 @@ export const CategoryService = {
   getSingleCategory,
   getUsersSelectedcategory,
   followUnfollowCategory,
+  getCategorizedBlogs,
 };

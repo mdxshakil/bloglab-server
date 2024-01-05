@@ -18,6 +18,8 @@ router.get('/get-pending-blogs', BlogController.getBlogsForAdminDashboard);
 router.get('/get-preferred-blogs', BlogController.getBlogsByUserPreference);
 router.get('/latest-blogs', BlogController.getLatestBlogs);
 router.get('/featured-blogs', BlogController.getFeaturedBlogs);
+router.get('/search-result', BlogController.getBlogsBySearchTerm);
+router.get('/most-liked-blogs', BlogController.getMostLikedBlogs);
 
 router.patch(
   '/approve-pending-blogs',

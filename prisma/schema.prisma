@@ -12,7 +12,7 @@ model User {
   email         String         @unique
   password      String
   role          USER_ROLE
-  roleHistory   USER_ROLE      
+  roleHistory   USER_ROLE
   accountStatus ACCOUNT_STATUS @default(pending)
   profile       Profile?
 
@@ -42,6 +42,7 @@ model Profile {
   blogs               Blog[]
 
   followers Follower[]
+  following Following[]
   likes     Like[]
   bookMarks BookMark[]
   comments  Comment[]
@@ -59,6 +60,17 @@ model Follower {
   authorId String //whom is being followed
 
   @@map("followers")
+}
+
+model Following {
+  id String @id @default(uuid())
+
+  followingId String //whom is being followed
+  following   Profile @relation(fields: [followingId], references: [id])
+
+  userId String //who is following
+
+  @@map("followings")
 }
 
 model Category {

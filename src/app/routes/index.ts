@@ -4,6 +4,7 @@ import { BlogRoutes } from '../modules/blog/blog.routes';
 import { BookMarkRoutes } from '../modules/bookMark/bookMark.routes';
 import { CategoryRoutes } from '../modules/category/category.routes';
 import { CommentRoutes } from '../modules/comment/comment.routes';
+import { FollowingRoutes } from '../modules/following/following.routes';
 import { ProfileRoutes } from '../modules/profile/profile.routes';
 import { StatisticsRoutes } from '../modules/statistics/statistics.routes';
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
   {
     path: '/statistics',
     route: StatisticsRoutes,
+  },
+  {
+    path: '/following',
+    route: FollowingRoutes,
   },
 ];
 

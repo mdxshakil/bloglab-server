@@ -9,7 +9,6 @@ import { AuthService } from './auth.service';
 const signUp = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const profilePicture = await uploadImage(req.file?.path as string);
-  console.log(profilePicture);
 
   const result = await AuthService.signUp({ ...data, profilePicture });
 

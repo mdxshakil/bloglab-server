@@ -1,7 +1,9 @@
 import { Category } from '@prisma/client';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
+import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
+import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 import { CategoryService } from './category.service';
 
@@ -85,6 +87,23 @@ const followUnfollowCategory = catchAsync(
   }
 );
 
+const getCategorizedBlogs = catchAsync(async (req: Request, res: Response) => {
+  const { categoryTitle } = req.params;
+  const paginationOptions = pick(req.query, paginationFields);
+  
+  const result = await CategoryService.getCategorizedBlogs(
+    categoryTitle,
+    paginationOptions
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blogs retrived acording category',
+    data: result,
+  });
+});
+
 export const CategoryController = {
   createCategory,
   editCategory,
@@ -92,4 +111,5 @@ export const CategoryController = {
   getSingleCategory,
   getUsersSelectedcategory,
   followUnfollowCategory,
+  getCategorizedBlogs,
 };

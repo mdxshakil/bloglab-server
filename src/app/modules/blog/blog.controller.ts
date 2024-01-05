@@ -120,7 +120,11 @@ const likeBlog = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getFeaturedBlogs = catchAsync(async (req: Request, res: Response) => {
-  const result = await BlogService.getFeaturedBlogs();
+  const { skip, limit } = req.query;  
+  const result = await BlogService.getFeaturedBlogs(
+    Number(skip),
+    Number(limit)
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -154,6 +158,31 @@ const makeFeatured = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getBlogsBySearchTerm = catchAsync(async (req: Request, res: Response) => {
+  const { searchTerm } = req.query;
+  const paginationOptions = pick(req.query, paginationFields);
+  const result = await BlogService.getBlogsBySearchTerm(
+    searchTerm as string,
+    paginationOptions
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blogs retrived by searchTerm',
+    data: result,
+  });
+});
+
+const getMostLikedBlogs = catchAsync(async (req: Request, res: Response) => {
+  const result = await BlogService.getMostLikedBlogs();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blogs retrived by searchTerm',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createNewBlog,
   getBlogsForAdminDashboard,
@@ -166,4 +195,6 @@ export const BlogController = {
   getFeaturedBlogs,
   deleteBlogById,
   makeFeatured,
+  getBlogsBySearchTerm,
+  getMostLikedBlogs,
 };

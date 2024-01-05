@@ -315,7 +315,7 @@ const getLatestBlogs = async (): Promise<Blog[]> => {
     orderBy: {
       createdAt: 'desc',
     },
-    take: 5,
+    take: 6,
   });
 
   return result;
@@ -401,7 +401,10 @@ const likeBlog = async (
   return { message };
 };
 
-const getFeaturedBlogs = async (): Promise<Blog[]> => {
+const getFeaturedBlogs = async (
+  skip: number,
+  limit: number
+): Promise<Blog[]> => {
   const result = await prisma.blog.findMany({
     where: {
       isApproved: true,
@@ -415,6 +418,8 @@ const getFeaturedBlogs = async (): Promise<Blog[]> => {
     orderBy: {
       createdAt: 'desc',
     },
+    skip: skip,
+    take: limit,
   });
 
   return result;
@@ -441,12 +446,12 @@ const makeFeautred = async (
   });
 
   if (action === 'make featured') {
-    if (numberOfFeaturedBlogs >= 5) {
-      throw new ApiError(
-        httpStatus.BAD_REQUEST,
-        'Maximum 5 blogs can be in featured list'
-      );
-    }
+    // if (numberOfFeaturedBlogs >= 5) {
+    //   throw new ApiError(
+    //     httpStatus.BAD_REQUEST,
+    //     'Maximum 5 blogs can be in featured list'
+    //   );
+    // }
     return await prisma.blog.update({
       where: {
         id: blogId,
@@ -473,6 +478,70 @@ const makeFeautred = async (
   }
 };
 
+const getBlogsBySearchTerm = async (
+  searchTerm: string,
+  paginationOptions: IPaginationOptions
+) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions);
+
+  const result = await prisma.blog.findMany({
+    where: {
+      title: {
+        contains: searchTerm,
+        mode: 'insensitive',
+      },
+    },
+    include: {
+      category: true,
+      author: true,
+    },
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    skip,
+    take: limit,
+  });
+
+  const total = await prisma.blog.count({
+    where: {
+      title: {
+        contains: searchTerm,
+        mode: 'insensitive',
+      },
+    },
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pageCount: Math.ceil(total / limit) || 1,
+    },
+    data: result,
+  };
+};
+
+const getMostLikedBlogs = async (): Promise<Blog[]> => {
+  const result = await prisma.blog.findMany({
+    where: {
+      isApproved: true,
+      visibility: BLOG_VISIBILITY.public,
+    },
+    include: {
+      author: true,
+      category: true,
+    },
+    orderBy: {
+      likeCount: 'desc',
+    },
+    take: 6,
+  });
+
+  return result;
+};
+
 export const BlogService = {
   createNewBlog,
   getBlogsForAdminDashboard,
@@ -485,4 +554,6 @@ export const BlogService = {
   getFeaturedBlogs,
   deleteBlogById,
   makeFeautred,
+  getBlogsBySearchTerm,
+  getMostLikedBlogs,
 };
