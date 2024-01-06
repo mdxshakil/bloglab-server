@@ -7,6 +7,8 @@ router.patch(
   ProfileController.updateBlogReadCount
 );
 
+router.get('/featured-profiles', ProfileController.getFeaturedBloggersProfile);
 router.get('/:profileId', ProfileController.getProfileInfo);
+
 
 export const ProfileRoutes = router;

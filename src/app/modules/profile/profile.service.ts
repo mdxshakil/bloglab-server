@@ -49,7 +49,39 @@ const getProfileInfo = async (profileId: string): Promise<Profile | null> => {
   return result;
 };
 
+const getFeaturedBloggersProfile = async (): Promise<Profile[] | null> => {
+  const result = await prisma.profile.findMany({
+    where: {
+      user: {
+        role: 'blogger',
+      },
+    },
+    orderBy: {
+      followers: {
+        _count: 'desc',
+      },
+    },
+    take: 8,
+    // include: {
+    //   _count: {
+    //     select: {
+    //       followers: true,
+    //       following: true,
+    //       blogs: true,
+    //     },
+    //   },
+    // },
+    include: {
+      followers: true,
+      following: true,
+      blogs: true,
+    },
+  });
+  return result;
+};
+
 export const ProfileService = {
   updateBlogReadCount,
   getProfileInfo,
+  getFeaturedBloggersProfile,
 };

@@ -28,7 +28,21 @@ const getProfileInfo = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getFeaturedBloggersProfile = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ProfileService.getFeaturedBloggersProfile();
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Featured profiles retrived',
+      data: result,
+    });
+  }
+);
+
 export const ProfileController = {
   updateBlogReadCount,
   getProfileInfo,
+  getFeaturedBloggersProfile,
 };
